@@ -1,3 +1,10 @@
+# Deploy Vault with Helm on Kubernetes
+Instructions for the impatient on how to get a vault server up and running on Kubernetes.
+
+> **Warning**
+> In this guide the PVC lifecycle is managed by helm so if you undeploy the vault chart your data is GONE!
+
+
 # Installation
 
 ## SSL
