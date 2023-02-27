@@ -48,6 +48,41 @@ kubectl create namespace vault
 helm upgrade --install -n vault --values values.yaml vault hashicorp/vault
 ```
 
+You will see a message like this:
+
+```
+Release "vault" has been upgraded. Happy Helming!
+NAME: vault
+LAST DEPLOYED: Mon Feb 27 00:33:19 2023
+NAMESPACE: vault
+STATUS: deployed
+REVISION: 2
+NOTES:
+Thank you for installing HashiCorp Vault!
+
+Now that you have deployed Vault, you should look over the docs on using
+Vault with Kubernetes available here:
+
+https://www.vaultproject.io/docs/
+
+
+Your release is named vault. To learn more about the release, try:
+
+  $ helm status vault
+  $ helm get manifest vault
+```
+
+And you will see the vault pod has failed to come up:
+
+```
+$ kubectl get pods -n vault
+NAME                                    READY   STATUS    RESTARTS   AGE
+vault-agent-injector-66b75d668f-tmxnq   1/1     Running   0          6m52s
+vault-0                                 0/1     Running   0          6m52s
+```
+
+This is because you must first initialize and unseal the vault
+
 # Configuration
 ## Initialize the vault
 
@@ -56,7 +91,7 @@ helm upgrade --install -n vault --values values.yaml vault hashicorp/vault
 
 * Take note of the `Useal Key` infos - you need these to unseal (turn on) the vault
 * Same goes for `Intial Root Token` - this is used for `vault` root level cli access
-* You only see these messages once, even with `helm status -n vault vault`
+* You only see these messages once
 
 ```
 kubectl exec -n vault --stdin=true --tty=true vault-0 -- vault operator init
@@ -93,6 +128,7 @@ kubectl exec -n vault --stdin=true --tty=true vault-0 -- vault operator unseal F
 ## Create and read a secret
 
 Into the vault pod first:
+
 ```
 kubectl exec -n vault -ti vault-0 -- sh
 ```
@@ -149,7 +185,7 @@ export VAULT_CACERT=~/.vault/vault.ca
 export VAULT_TOKEN=hvs.CAESIKyA_nC9oAOE8e6Ndnq091enk81bNPIu_U4VSOAhzdHOGh4KHGh2cy55ZWhXWG94Vm5mM2xPV1ZyTTZaV0ViUE4
 
 # try to read the secret created earlier
-vault kv get -mount secret -address http://vault.lan.asio:8200 hello
+vault kv get -mount secret -address https://vault.lan.asio:8200 hello
 ```
 
 # Troubleshooting
