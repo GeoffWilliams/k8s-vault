@@ -153,6 +153,19 @@ path "secret/data/*" {
 EOF
 ```
 
+Some systems (eg terraform) require the ability to create child tokens too, in which case the policy would be:
+
+```
+vault policy write ro-secret-policy - << EOF
+path "secret/data/*" {
+  capabilities = ["read"]
+}
+path "auth/token/create" {
+ capabilities = ["create", "read", "update", "delete", "list"]
+}
+EOF
+```
+
 ## Create token - using the policy
 
 > **Warning**
