@@ -166,6 +166,28 @@ path "auth/token/create" {
 EOF
 ```
 
+Same again if listing secrets is required:
+
+```
+vault policy write ro-secret-policy - << EOF
+path "secret/data/*" {
+  capabilities = ["read"]
+}
+path "secret/metadata"
+{
+  capabilities = [ "list" ]
+}
+
+path "secret/metadata/*"
+{
+  capabilities = [ "list", "read" ]
+}
+path "auth/token/create" {
+ capabilities = ["create", "read", "update", "delete", "list"]
+}
+EOF
+```
+
 ## Create token - using the policy
 
 > **Warning**
